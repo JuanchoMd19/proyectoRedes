@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8
+    container_name: tareas-mysql-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: superseguro
+      MYSQL_DATABASE: tareas_db
+    volumes:
+      - tareas_mysql_data_prod:/var/lib/mysql
+    networks:
+      - tareas_net
+
+  backend:
+    image: TU_USUARIO/tareas-backend:latest
+    container_name: tareas-backend-prod
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: superseguro
+      DB_NAME: tareas_db
+      DB_PORT: 3306
+      NODE_ENV: production
+    depends_on:
+      - db
+    networks:
+      - tareas_net
+
+  frontend:
+    image: TU_USUARIO/tareas-frontend:latest
+    container_name: tareas-frontend-prod
+    depends_on:
+      - backend
+    networks:
+      - tareas_net
+
+networks:
+  tareas_net:
+
+volumes:
+  tareas_mysql_data_prod:
