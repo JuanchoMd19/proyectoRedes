@@ -18,3 +18,4 @@ build/
 
 # Docker
 *.pid
+node_modules/
