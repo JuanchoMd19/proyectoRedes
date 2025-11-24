@@ -1,60 +1,38 @@
-services:
+version: '3.8'
 
-  tareas-mysql:
+services:
+  backend:
+    image: ${DOCKER_USER}/backend:latest
+    container_name: tareas-backend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=123456
+      - DB_NAME=tareasdb
+    depends_on:
+      - mysql
+
+  frontend:
+    image: ${DOCKER_USER}/frontend:latest
+    container_name: tareas-frontend
+    restart: always
+    ports:
+      - "3000:80"
+
+  mysql:
     image: mysql:8.0
     container_name: tareas-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: tareas_db
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=tareasdb
     ports:
       - "3306:3306"
     volumes:
-      - devops_mysql_data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - tareas_net
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-uroot", "-prootpass"]
-      interval: 5s
-      retries: 10
-
-  tareas-backend:
-    image: jjmartinezd/backend:latest
-    container_name: tareas-backend
-    restart: always
-    depends_on:
-      tareas-mysql:
-        condition: service_healthy
-    environment:
-      DB_HOST: tareas-mysql
-      DB_USER: root
-      DB_PASSWORD: rootpass
-      DB_NAME: tareas_db
-      DB_PORT: 3306
-    ports:
-      - "3001:3001"
-    networks:
-      - tareas_net
-
-tareas-frontend:
-  build:
-    context: .
-    dockerfile: docker/Dockerfile.frontend
-    args:
-      REACT_APP_API_URL: "http://tareas-backend:3001"
-  container_name: tareas-frontend
-  ports:
-    - "3000:80"
-  depends_on:
-    - tareas-backend
-  networks:
-    - tareas_net
-
+      - db_data:/var/lib/mysql
 
 volumes:
-  devops_mysql_data:
-
-networks:
-  tareas_net:
-    driver: bridge
+  db_data:
