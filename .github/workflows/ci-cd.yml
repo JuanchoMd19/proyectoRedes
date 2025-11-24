@@ -7,7 +7,6 @@ on:
     branches: [ main ]
 
 jobs:
-
   build-and-test:
     runs-on: ubuntu-latest
 
@@ -15,9 +14,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ===============================
-      # BACKEND
-      # ===============================
       - name: Install backend dependencies
         working-directory: ./app/backend
         run: npm install
@@ -29,9 +25,6 @@ jobs:
             npm test --if-present
           fi
 
-      # ===============================
-      # FRONTEND
-      # ===============================
       - name: Install frontend dependencies
         working-directory: ./app/frontend
         run: npm install
@@ -40,9 +33,6 @@ jobs:
         working-directory: ./app/frontend
         run: npm run build
 
-      # ===============================
-      # DOCKER
-      # ===============================
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
