@@ -1,55 +1,61 @@
-version: "3.9"
+version: "3.8"
 
 services:
-  db:
-    image: mysql:8
-    container_name: tareas-mysql-dev
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: tareas_db
-    ports:
-      - "3307:3306"
-    volumes:
-      - tareas_mysql_data_dev:/var/lib/mysql
-    networks:
-      - tareas_net
-
   backend:
-    build:
-      context: ../app/backend
-      dockerfile: ../../docker/Dockerfile.backend
-    container_name: tareas-backend-dev
-    environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: tareas_db
-      DB_PORT: 3306
-    volumes:
-      - ../app/backend:/usr/src/app
+    build: ../app/backend
+    image: jjmartinezd/backend:latest
+    container_name: tareas-backend
+    restart: always
     ports:
       - "3001:3001"
+    environment:
+      DB_HOST: tareas-mysql
+      DB_USER: root
+      DB_PASSWORD: 123456
+      DB_NAME: tareasdb
+      DB_PORT: 3306
     depends_on:
-      - db
-    networks:
-      - tareas_net
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
   frontend:
-    build:
-      context: ../app/frontend
-      dockerfile: ../../docker/Dockerfile.frontend
-    container_name: tareas-frontend-dev
-    volumes:
-      - ../app/frontend:/usr/src/app
+    build: ../app/frontend
+    image: jjmartinezd/frontend:latest
+    container_name: tareas-frontend
+    restart: always
     ports:
       - "3000:80"
     depends_on:
-      - backend
-    networks:
-      - tareas_net
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
-networks:
-  tareas_net:
+  mysql:
+    image: mysql:8.0
+    container_name: tareas-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: tareasdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 10
+      timeout: 5s
 
 volumes:
-  tareas_mysql_data_dev:
+  db_data:
