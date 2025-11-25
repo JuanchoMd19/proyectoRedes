@@ -60,6 +60,21 @@ app.delete("/api/tareas/:id", (req, res) => {
   });
 });
 
+app.patch("/api/tareas/:id/estado", (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  pool.query(
+    "UPDATE tareas SET estado=? WHERE id=?",
+    [estado, id],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ id, estado, success: true });
+    }
+  );
+});
+
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log("Servidor backend corriendo en puerto " + PORT);
