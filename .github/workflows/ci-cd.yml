@@ -43,13 +43,13 @@ jobs:
         run: |
           docker build \
             -t ${{ secrets.DOCKER_USER }}/backend:latest \
-            -f docker/Dockerfile.backend .
+            -f app/backend/Dockerfile ./app/backend
 
       - name: Build frontend image
         run: |
           docker build \
             -t ${{ secrets.DOCKER_USER }}/frontend:latest \
-            -f docker/Dockerfile.frontend .
+            -f app/frontend/Dockerfile ./app/frontend
 
       - name: Push backend image
         run: docker push ${{ secrets.DOCKER_USER }}/backend:latest
