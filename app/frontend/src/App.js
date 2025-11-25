@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
 
 function App() {
   const [tareas, setTareas] = useState([]);
 
-const API = process.env.REACT_APP_API_URL + "/api/tareas";
+  const API = process.env.REACT_APP_API_URL + "/api/tareas";
 
-  const loadTareas = async () => {
+  const loadTareas = useCallback(async () => {
     const res = await fetch(API);
     const data = await res.json();
     setTareas(data);
-  };
+  }, [API]);
 
   useEffect(() => {
     loadTareas();
-  }, []);
+  }, [loadTareas]);
 
   const addTarea = async (tarea) => {
     const res = await fetch(API, {
