@@ -63,7 +63,7 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Prueba211111</h1>
+      <h1>Prueba</h1>
 
       <TaskForm onAdd={addTarea} />
 
