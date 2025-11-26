@@ -63,7 +63,7 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Gestor de tareas</h1>
+      <h1>Gestor de tareas V2</h1>
 
       <TaskForm onAdd={addTarea} />
 
