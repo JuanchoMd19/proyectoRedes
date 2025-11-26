@@ -59,3 +59,6 @@ jobs:
 
       - name: Trigger local deploy webhook
         run: curl -X POST ${{ secrets.WEBHOOK_DEPLOY }}
+
+      - name: Trigger Dokploy Deployment
+        run: curl -X POST ${{ secrets.WEBHOOK_DEPLOY }}
